@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Paleta de Van Gogh | Galería, Tienda Premium & Academia Multidisciplinar</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cormorant Garamond & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        vangogh: {
+                            cobalt: '#07162C',  // Noche profunda
+                            sky: '#122D54',     // Cielo estrellado fluido
+                            gold: '#ECC348',    // Girasol vibrante
+                            amber: '#F5D061',   // Destello de estrella
+                            cypress: '#1C311F', // Ciprés oscuro
+                            cream: '#FAF6EE',   // Lienzo natural
+                            charcoal: '#0E1724',
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 25px rgba(236, 195, 72, 0.25)',
+                        'glow-lg': '0 0 35px rgba(236, 195, 72, 0.45)',
+                        'frame': '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(236, 195, 72, 0.1)',
+                        'gold-border': '0 0 10px rgba(236, 195, 72, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #07162C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ECC348;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #F5D061;
+        }
+
+        .canvas-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glass-panel {
+            background: rgba(7, 22, 44, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(236, 195, 72, 0.15);
+        }
+
+        .canvas-texture {
+            background-image: radial-gradient(rgba(236, 195, 72, 0.04) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+
+        .brush-highlight {
+            position: relative;
+            z-index: 10;
+        }
+        .brush-highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: rgba(236, 195, 72, 0.25);
+            z-index: -1;
+            border-radius: 4px;
+            transform: skewX(-12deg);
+        }
+
+        .gallery-spotlight {
+            background: radial-gradient(circle at 50% -20%, rgba(236, 195, 72, 0.15) 0%, transparent 60%);
+        }
+
+        .museum-frame {
+            border: 14px solid #1e1e1e;
+            outline: 3px double #ECC348;
+            outline-offset: -8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.6);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .museum-frame:hover {
+            outline-color: #F5D061;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.9), 0 20px 40px rgba(236, 195, 72, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-vangogh-cobalt text-vangogh-cream font-sans antialiased canvas-texture selection:bg-vangogh-gold selection:text-vangogh-cobalt">
+
+    <!-- MAIN APPLICATION HEADER -->
+    <header class="sticky top-0 z-50 w-full glass-panel border-b border-vangogh-gold/10 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo & Brand -->
+            <a href="#" onclick="switchView('landing')" class="flex items-center gap-3 group">
+                <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-vangogh-gold via-vangogh-sky to-vangogh-cobalt p-[2px] shadow-glow flex items-center justify-center overflow-hidden transition-transform duration-500 group-hover:rotate-180">
+                    <div class="w-full h-full bg-vangogh-cobalt rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-paint-brush text-vangogh-gold text-sm"></i>
+                    </div>
+                </div>
+                <div>
+                    <span class="font-serif text-2xl tracking-wider block font-bold text-vangogh-cream group-hover:text-vangogh-gold transition-colors duration-300">LA PALETA</span>
+                    <span class="text-[9px] uppercase tracking-[0.25em] text-vangogh-gold/80 block -mt-1">de Van Gogh</span>
+                </div>
+            </a>
+
+            <!-- Desktop Menu (Conditional display based on current active view) -->
+            <nav class="hidden lg:flex items-center gap-6" id="main-nav-links">
+                <a href="#galeria" onclick="switchView('landing')" class="font-serif text-lg tracking-wide text-vangogh-cream hover:text-vangogh-gold transition-colors duration-300">Galería del Mes</a>
+                <a href="#academias" onclick="switchView('landing')" class="font-serif text-lg tracking-wide text-vangogh-cream hover:text-vangogh-gold transition-colors duration-300">Nuestras Academias</a>
+                <a href="#tutorias" onclick="switchView('landing')" class="font-serif text-lg tracking-wide text-vangogh-cream hover:text-vangogh-gold transition-colors duration-300">Tutorías Escolares</a>
+                <a href="#artistas" onclick="switchView('landing')" class="font-serif text-lg tracking-wide text-vangogh-cream hover:text-vangogh-gold transition-colors duration-300">Apoyo a Artistas</a>
+            </nav>
+
+            <!-- Store Specific back indicator (Hidden by default) -->
+            <nav class="hidden lg:flex items-center gap-4 hidden" id="store-nav-links">
+                <button onclick="switchView('landing')" class="font-serif text-lg tracking-wide text-vangogh-cream hover:text-vangogh-gold transition-colors duration-300 flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left text-xs"></i> Volver al Atelier Central
+                </button>
+            </nav>
+
+            <!-- Utilities & Prominent Store Trigger -->
+            <div class="flex items-center gap-4">
+                <!-- DEDICATED STORE GLOWING BUTTON -->
+                <button onclick="switchView('store')" id="store-toggle-btn" class="relative overflow-hidden group px-5 py-2.5 rounded-full bg-gradient-to-r from-vangogh-gold to-yellow-500 text-vangogh-cobalt font-extrabold text-xs tracking-wider uppercase shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all duration-300 flex items-center gap-2">
+                    <span class="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-20 rotate-12 group-hover:-translate-x-40 ease"></span>
+                    <i class="fa-solid fa-store text-sm animate-pulse"></i>
+                    <span>Tienda de Materiales</span>
+                </button>
+
+                <button onclick="toggleCart()" class="relative p-2.5 rounded-full hover:bg-vangogh-sky/50 transition-colors duration-300 group focus:outline-none" aria-label="Abrir carrito">
+                    <i class="fa-solid fa-cart-shopping text-lg text-vangogh-cream group-hover:text-vangogh-gold transition-colors duration-300"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-amber-500 text-white text-[9px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center animate-bounce hidden">0</span>
+                </button>
+
+                <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-lg text-vangogh-cream hover:text-vangogh-gold focus:outline-none" aria-label="Menú principal">
+                    <i id="mobile-menu-icon" class="fa-solid fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden border-t border-vangogh-gold/10 bg-vangogh-cobalt/95 backdrop-blur-lg">
+            <div class="px-4 pt-2 pb-6 space-y-3">
+                <a href="#galeria" onclick="switchView('landing'); toggleMobileMenu()" class="block font-serif text-xl py-2 px-3 hover:bg-vangogh-sky/30 rounded-lg text-vangogh-cream hover:text-vangogh-gold transition-all">Galería del Mes</a>
+                <a href="#academias" onclick="switchView('landing'); toggleMobileMenu()" class="block font-serif text-xl py-2 px-3 hover:bg-vangogh-sky/30 rounded-lg text-vangogh-cream hover:text-vangogh-gold transition-all">Nuestras Academias</a>
+                <a href="#tutorias" onclick="switchView('landing'); toggleMobileMenu()" class="block font-serif text-xl py-2 px-3 hover:bg-vangogh-sky/30 rounded-lg text-vangogh-cream hover:text-vangogh-gold transition-all">Tutorías Escolares</a>
+                <a href="#artistas" onclick="switchView('landing'); toggleMobileMenu()" class="block font-serif text-xl py-2 px-3 hover:bg-vangogh-sky/30 rounded-lg text-vangogh-cream hover:text-vangogh-gold transition-all">Apoyo a Artistas</a>
+                
+                <div class="pt-4 px-3 border-t border-vangogh-gold/10 space-y-2">
+                    <button onclick="switchView('store'); toggleMobileMenu()" class="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-gradient-to-r from-vangogh-gold to-vangogh-amber text-vangogh-cobalt font-bold text-center tracking-wide text-xs uppercase shadow-glow">
+                        <i class="fa-solid fa-store"></i> Entrar a la Tienda Oficial
+                    </button>
+                    <a href="#contacto-form" onclick="switchView('landing'); toggleMobileMenu()" class="w-full block py-3 rounded-full bg-vangogh-sky/50 text-vangogh-cream font-semibold text-center tracking-wide text-xs uppercase border border-vangogh-gold/20">
+                        Inscribirse / Consultar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- VIEW CONTAINER 1: LANDING & ACADEMY ATELIER -->
+    <div id="landing-view-container" class="relative">
+        
+        <!-- STARRY HERO AREA -->
+        <div class="relative min-h-[90vh] flex flex-col justify-between overflow-hidden">
+            <canvas id="starryCanvas" class="canvas-bg"></canvas>
+            
+            <main class="relative z-10 flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-12 py-12 md:py-20">
+                <!-- Left Text Block -->
+                <div class="w-full lg:w-1/2 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-vangogh-sky/50 border border-vangogh-gold/20 backdrop-blur-md">
+                        <span class="w-2 h-2 rounded-full bg-vangogh-gold animate-ping"></span>
+                        <span class="text-[10px] uppercase tracking-widest text-vangogh-gold font-bold">Un Universo de Arte y Aprendizaje</span>
+                    </div>
+                    
+                    <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-vangogh-cream leading-tight">
+                        El punto de encuentro para <span class="text-transparent bg-clip-text bg-gradient-to-r from-vangogh-gold via-vangogh-amber to-yellow-200">crear, aprender y crecer</span>
+                    </h1>
+                    
+                    <p class="text-base sm:text-lg text-gray-300 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
+                        En <span class="text-vangogh-gold font-semibold">La Paleta de Van Gogh</span>, unificamos la pasión del arte con el desarrollo integral. Descubre nuestras exposiciones, academias de arte y música, impulsa tu rendimiento escolar con tutorías personalizadas, y únete a un espacio que promociona el talento artístico independiente.
+                    </p>
+
+                    <!-- Navigation Shortcuts / Call to actions -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                        <a href="#galeria" class="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-vangogh-gold to-vangogh-amber text-vangogh-cobalt font-bold text-sm tracking-wider uppercase hover:shadow-glow-lg hover:scale-105 transition-all duration-300 text-center">
+                            Visitar la Galería
+                        </a>
+                        <button onclick="switchView('store')" class="w-full sm:w-auto px-8 py-4 rounded-full border border-vangogh-gold/30 hover:border-vangogh-gold bg-vangogh-sky/30 backdrop-blur-sm text-vangogh-cream font-medium tracking-wider text-sm flex items-center justify-center gap-2 hover:bg-vangogh-sky/50 transition-all duration-300">
+                            <i class="fa-solid fa-store text-vangogh-gold"></i>
+                            <span>Ir a la Tienda de Materiales</span>
+                        </button>
+                    </div>
+
+                    <!-- Fast Statistics (Bento Style) -->
+                    <div class="grid grid-cols-3 gap-4 pt-8 border-t border-vangogh-gold/10 max-w-md mx-auto lg:mx-0">
+                        <div>
+                            <span class="block font-serif text-2xl sm:text-3xl font-bold text-vangogh-gold">150+</span>
+                            <span class="text-[10px] text-gray-400 uppercase tracking-wider block">Obras Expuestas</span>
+                        </div>
+                        <div>
+                            <span class="block font-serif text-2xl sm:text-3xl font-bold text-vangogh-gold">100%</span>
+                            <span class="text-[10px] text-gray-400 uppercase tracking-wider block">Atención Individual</span>
+                        </div>
+                        <div>
+                            <span class="block font-serif text-2xl sm:text-3xl font-bold text-vangogh-gold">60+</span>
+                            <span class="text-[10px] text-gray-400 uppercase tracking-wider block">Artistas Apoyados</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Visual Interactive Frame -->
+                <div class="w-full lg:w-1/2 flex items-center justify-center relative">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-vangogh-gold/15 via-transparent to-vangogh-sky/45 rounded-full blur-3xl -z-10 animate-pulse"></div>
+                    
+                    <div class="relative w-full max-w-[430px] aspect-[4/5] rounded-[2rem] p-3 bg-gradient-to-tr from-vangogh-gold/30 via-vangogh-sky/40 to-vangogh-gold/20 shadow-glow transform hover:rotate-1 transition-all duration-700">
+                        <div class="w-full h-full rounded-[1.6rem] overflow-hidden relative group">
+                            <div class="absolute inset-0 bg-gradient-to-t from-vangogh-cobalt via-transparent to-transparent opacity-70 z-10"></div>
+                            <img src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Fusión de Arte y Educación" 
+                                 class="w-full h-full object-cover transform scale-100 group-hover:scale-105 transition-transform duration-[5s]"
+                                 onerror="this.src='https://placehold.co/430x538/07162C/FAF6EE?text=Academia+de+Arte'">
+                            
+                            <!-- Premium floating badge overlay -->
+                            <div class="absolute bottom-6 left-6 right-6 z-20 glass-panel p-5 rounded-2xl border border-vangogh-gold/25">
+                                <span class="text-[10px] font-bold text-vangogh-gold uppercase tracking-wider block mb-1">Nuestra Filosofía</span>
+                                <h3 class="font-serif text-xl sm:text-2xl font-bold text-vangogh-cream leading-tight">"Descubrir la música del lienzo y la geometría de las estrellas."</h3>
+                                <p class="text-xs text-gray-300 mt-2 italic font-light">Un espacio integral donde la apreciación del arte, el saber escolar y la música conviven en perfecta armonía.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Down indicator -->
+            <div class="w-full text-center pb-8 z-10">
+                <a href="#galeria" class="inline-flex flex-col items-center gap-2 group">
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-vangogh-gold/70 group-hover:text-vangogh-gold transition-colors">Entrar en la Galería</span>
+                    <i class="fa-solid fa-chevron-down text-vangogh-gold/50 group-hover:text-vangogh-gold group-hover:translate-y-1 transition-all duration-300"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- CLASSICAL MUSEUM ART GALLERY SECTION -->
+        <section id="galeria" class="py-24 bg-[#051123] border-t border-b border-vangogh-gold/15 relative gallery-spotlight">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-10 space-y-4">
+                    <span class="font-serif text-xl italic text-vangogh-gold">Exposiciones del Atelier</span>
+                    <h2 class="font-serif text-4xl sm:text-5xl font-bold tracking-wide leading-tight text-vangogh-cream">Galería de Arte: Obras Destacadas del Mes</h2>
+                    <div class="w-24 h-[2px] bg-gradient-to-r from-transparent via-vangogh-gold to-transparent mx-auto"></div>
+                    <p class="text-gray-300 text-sm sm:text-base font-light">
+                        Te damos la bienvenida a nuestra curaduría especial. Cada cuadro ha sido pintado por nuestros artistas residentes y consagrados. Pasa adelante, admira sus trazos y si te conmueve una obra, coordina su adquisición directamente.
+                    </p>
+                </div>
+
+                <!-- NEW: High-impact Patronage & Support Callout Banner (Trends 2026) -->
+                <div class="max-w-4xl mx-auto mb-12 glass-panel p-6 sm:p-8 rounded-[2rem] border border-vangogh-gold/30 bg-gradient-to-tr from-vangogh-sky/60 via-vangogh-cobalt to-[#0a203c] shadow-glow flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+                    <div class="space-y-2">
+                        <span class="text-[10px] bg-vangogh-gold/20 text-vangogh-gold border border-vangogh-gold/40 px-3.5 py-1 rounded-full uppercase font-bold tracking-widest inline-block">Impacto Cultural</span>
+                        <h3 class="font-serif text-2xl sm:text-3xl font-bold text-vangogh-cream leading-tight">Apoya al Talento Independiente</h3>
+                        <p class="text-xs sm:text-sm text-gray-300 max-w-xl font-light leading-relaxed">
+                            El 100% de los fondos de tasación se destinan de manera directa a los creadores independientes. Adquirir una pieza financia nuevos lienzos, pigmentos de alta gama y sostiene la carrera de un artista.
+                        </p>
+                    </div>
+                    <div class="shrink-0">
+                        <a href="https://wa.me/50255033860?text=Hola%20La%20Paleta%20de%20Van%20Gogh!%20Me%20gustar%C3%ADa%20obtener%20informaci%C3%B3n%20sobre%20c%C3%B3mo%20puedo%20convertirme%20en%20Mecenas%20y%20apoyar%20al%20talento%20independiente." target="_blank" class="relative group inline-flex items-center gap-2 px-6 py-4 rounded-full bg-gradient-to-r from-vangogh-gold to-yellow-500 text-vangogh-cobalt font-extrabold text-xs tracking-wider uppercase shadow-glow-lg hover:scale-105 transition-all duration-300">
+                            <i class="fa-solid fa-hand-holding-heart animate-pulse"></i>
+                            <span>Cómo ser Mecenas</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Gallery filters -->
+                <div class="flex flex-wrap justify-center gap-2 pt-4 mb-12">
+                    <button onclick="filterGallery('all')" class="gallery-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-vangogh-gold text-vangogh-cobalt border border-vangogh-gold/30 transition-all">Ver Todas</button>
+                    <button onclick="filterGallery('oleo')" class="gallery-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-vangogh-sky/40 text-vangogh-cream border border-vangogh-gold/15 hover:border-vangogh-gold hover:text-vangogh-gold transition-all">Óleos & Acrílicos</button>
+                    <button onclick="filterGallery('acuarela')" class="gallery-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-vangogh-sky/40 text-vangogh-cream border border-vangogh-gold/15 hover:border-vangogh-gold hover:text-vangogh-gold transition-all">Acuarela & Dibujo</button>
+                    <button onclick="filterGallery('escultura')" class="gallery-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-vangogh-sky/40 text-vangogh-cream border border-vangogh-gold/15 hover:border-vangogh-gold hover:text-vangogh-gold transition-all">Esculturas & Formas</button>
+                </div>
+
+                <!-- Gallery grid -->
+                <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                    <!-- Dynamic rendering through JS -->
+                </div>
+                
+                <div class="mt-16 text-center">
+                    <p class="text-xs text-gray-400 italic mb-4">¿Eres un artista local y quieres ver tu obra expuesta en este salón?</p>
+                    <button onclick="openArtistApplicationModal()" class="px-6 py-3 border border-vangogh-gold/30 hover:border-vangogh-gold rounded-full text-xs font-bold uppercase tracking-wider text-vangogh-gold hover:bg-vangogh-sky/20 transition-all duration-300">
+                        Postular mi Obra para Exhibición
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PORTFOLIO OF ACADEMIAS & SERVICES (BENTO MAP) -->
+        <section id="academias" class="py-24 bg-vangogh-cobalt/40 border-b border-vangogh-gold/10 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                    <span class="font-serif text-xl italic text-vangogh-gold">Servicios Educativos y Artísticos</span>
+                    <h2 class="font-serif text-4xl sm:text-5xl font-bold tracking-wide leading-tight">Explora Nuestras Grandes Academias & Actividades</h2>
+                    <div class="w-24 h-[2px] bg-gradient-to-r from-transparent via-vangogh-gold to-transparent mx-auto"></div>
+                    <p class="text-gray-300 text-sm sm:text-base font-light">Ofrecemos espacios didácticos especializados, adaptándonos al ritmo de cada alumno, de manera presencial o interactiva.</p>
+                </div>
+
+                <!-- Bento Layout mapping each requested service -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
+                    
+                    <!-- BENTO BLOCK 1: CLASES DE ARTE -->
+                    <div class="lg:col-span-8 glass-panel rounded-3xl p-8 relative overflow-hidden group hover:shadow-glow transition-all duration-500 flex flex-col justify-between min-h-[460px]">
+                        <div class="absolute -top-10 -right-10 w-60 h-60 bg-gradient-to-bl from-vangogh-gold/10 to-transparent rounded-full blur-3xl -z-10 group-hover:scale-110 transition-all"></div>
+                        
+                        <div>
+                            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-2xl bg-vangogh-sky/40 flex items-center justify-center border border-vangogh-gold/20">
+                                    <i class="fa-solid fa-palette text-vangogh-gold text-lg"></i>
+                                </div>
+                                <span class="text-[10px] bg-vangogh-gold/15 text-vangogh-gold border border-vangogh-gold/30 px-3 py-1 rounded-full uppercase font-bold tracking-wider">A partir de 4 años</span>
+                            </div>
+                            
+                            <h3 class="font-serif text-3xl sm:text-4xl font-bold mb-3 text-vangogh-cream group-hover:text-vangogh-gold transition-colors">1. Clases y Expresión de Arte</h3>
+                            <p class="text-gray-300 font-light text-sm sm:text-base max-w-2xl leading-relaxed mb-6">
+                                Guiamos la imaginación a través de talleres estructurados para principiantes y avanzados. Domina diferentes medios tradicionales y vanguardistas bajo la guía de licenciados en Bellas Artes.
+                            </p>
+
+                            <!-- Sub-disciplinas visual tags -->
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-3.5 py-1.5 rounded-full bg-vangogh-sky/30 text-xs font-medium text-vangogh-cream border border-vangogh-gold/10 hover:border-vangogh-gold/50 transition-colors"><i class="fa-solid fa-droplet text-blue-400 mr-1.5"></i>Acuarela</span>
+                                <span class="px-3.5 py-1.5 rounded-full bg-vangogh-sky/30 text-xs font-medium text-vangogh-cream border border-vangogh-gold/10 hover:border-vangogh-gold/50 transition-colors"><i class="fa-solid fa-brush text-vangogh-gold mr-1.5"></i>Acrílico</span>
+                                <span class="px-3.5 py-1.5 rounded-full bg-vangogh-sky/30 text-xs font-medium text-vangogh-cream border border-vangogh-gold/10 hover:border-vangogh-gold/50 transition-colors"><i class="fa-solid fa-oil-can text-amber-500 mr-1.5"></i>Óleo</span>
+                                <span class="px-3.5 py-1.5 rounded-full bg-vangogh-sky/30 text-xs font-medium text-vangogh-cream border border-vangogh-gold/10 hover:border-vangogh-gold/50 transition-colors"><i class="fa-solid fa-pencil text-gray-300 mr-1.5"></i>Lápiz y Carbón</span>
+                                <span class="px-3.5 py-1.5 rounded-full bg-vangogh-sky/30 text-xs font-medium text-vangogh-cream border border-vangogh-gold/10 hover:border-vangogh-gold/50 transition-colors"><i class="fa-solid fa-cube text-amber-300 mr-1.5"></i>Escultura</span>
+                                <span class="px-3.5 py-1.5 rounded-full bg-vangogh-sky/30 text-xs font-medium text-vangogh-cream border border-vangogh-gold/10 hover:border-vangogh-gold/50 transition-colors"><i class="fa-solid fa-scissors text-red-300 mr-1.5"></i>Decoupage</span>
+                                <span class="px-3.5 py-1.5 rounded-full bg-vangogh-sky/30 text-xs font-medium text-vangogh-cream border border-vangogh-gold/10 hover:border-vangogh-gold/50 transition-colors"><i class="fa-solid fa-shapes text-emerald-400 mr-1.5"></i>Manualidades</span>
+                                <span class="px-3.5 py-1.5 rounded-full bg-vangogh-sky/30 text-xs font-medium text-vangogh-cream border border-vangogh-gold/10 hover:border-vangogh-gold/50 transition-colors"><i class="fa-solid fa-wand-magic-sparkles text-pink-300 mr-1.5"></i>Crayón & Más</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between border-t border-vangogh-gold/10 pt-5">
+                            <span class="text-xs text-vangogh-gold uppercase tracking-wider font-semibold">Iniciación y perfeccionamiento técnico</span>
+                            <button onclick="openBooking('Academia de Arte Completa', 'Planes mensuales adaptados')" class="px-5 py-2.5 rounded-full bg-vangogh-cream text-vangogh-cobalt hover:bg-vangogh-gold hover:text-vangogh-cobalt font-bold text-xs tracking-wider uppercase transition-all flex items-center gap-2">
+                                <span>Reservar Horario</span>
+                                <i class="fa-solid fa-calendar-check"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- BENTO BLOCK 2: CLASES DE MÚSICA -->
+                    <div class="lg:col-span-4 glass-panel rounded-3xl p-8 relative overflow-hidden group hover:shadow-glow transition-all duration-500 flex flex-col justify-between min-h-[460px]">
+                        <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-gradient-to-tr from-vangogh-sky/20 to-transparent rounded-full blur-2xl -z-10"></div>
+                        
+                        <div>
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="w-12 h-12 rounded-2xl bg-vangogh-sky/40 flex items-center justify-center border border-vangogh-gold/20">
+                                    <i class="fa-solid fa-music text-vangogh-gold text-lg"></i>
+                                </div>
+                                <span class="text-[10px] bg-vangogh-gold/15 text-vangogh-gold border border-vangogh-gold/30 px-3 py-1 rounded-full uppercase font-bold tracking-wider">Bajo & Guitarra</span>
+                            </div>
+
+                            <h3 class="font-serif text-3xl font-bold mb-3 text-vangogh-cream group-hover:text-vangogh-gold transition-colors">2. Academia de Música</h3>
+                            <p class="text-gray-300 font-light text-sm leading-relaxed mb-6">
+                                Descubre tu ritmo interno dominando los instrumentos fundamentales de la armonía moderna. Clases enfocadas en la comprensión rítmica, lectura de tablaturas/partituras y ejecución práctica.
+                            </p>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3 bg-vangogh-cobalt/40 border border-vangogh-gold/10 p-3 rounded-xl">
+                                    <i class="fa-solid fa-guitar text-vangogh-gold text-sm"></i>
+                                    <span class="text-xs font-semibold">Guitarra Clásica y Eléctrica</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-vangogh-cobalt/40 border border-vangogh-gold/10 p-3 rounded-xl">
+                                    <i class="fa-solid fa-sliders text-vangogh-gold text-sm"></i>
+                                    <span class="text-xs font-semibold">Bajo Eléctrico (Ritmo & Groove)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-vangogh-gold/10 pt-5">
+                            <button onclick="openBooking('Academia de Música (Guitarra/Bajo)', 'Mensual / Individual')" class="w-full py-3 rounded-full bg-vangogh-sky/50 hover:bg-vangogh-gold text-vangogh-cream hover:text-vangogh-cobalt border border-vangogh-gold/20 hover:border-transparent text-xs font-bold uppercase tracking-wider transition-all">
+                                Programar Clase de Prueba
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- BENTO BLOCK 3: ACTIVIDADES CORPORATIVAS O PARA COLEGIOS -->
+                    <div class="lg:col-span-5 glass-panel rounded-3xl p-8 relative overflow-hidden group hover:shadow-glow transition-all duration-500 flex flex-col justify-between min-h-[380px]">
+                        <div class="absolute top-0 right-0 w-60 h-60 bg-gradient-to-bl from-vangogh-gold/5 to-transparent rounded-full blur-3xl -z-10"></div>
+                        <div>
+                            <div class="w-12 h-12 rounded-2xl bg-vangogh-sky/40 flex items-center justify-center border border-vangogh-gold/20 mb-6">
+                                <i class="fa-solid fa-users-rectangle text-vangogh-gold text-lg"></i>
+                            </div>
+                            <h3 class="font-serif text-3xl font-bold mb-3 text-vangogh-cream group-hover:text-vangogh-gold transition-colors">3. Actividades Grupales</h3>
+                            <p class="text-gray-300 font-light text-sm leading-relaxed mb-4">
+                                Organizamos talleres vivenciales de pintura, escultura y dinámicas colectivas orientadas a potenciar el trabajo en equipo, la integración de colegios, celebraciones artísticas o programas de Team Building para empresas.
+                            </p>
+                            <ul class="text-xs space-y-1.5 text-gray-400">
+                                <li><i class="fa-solid fa-star text-vangogh-gold mr-1.5 text-[9px]"></i>Tarde de Arte & Vino Corporativo</li>
+                                <li><i class="fa-solid fa-star text-vangogh-gold mr-1.5 text-[9px]"></i>Talleres de Integración para Colegios</li>
+                                <li><i class="fa-solid fa-star text-vangogh-gold mr-1.5 text-[9px]"></i>Eventos de Co-Creación a Gran Escala</li>
+                            </ul>
+                        </div>
+                        <div class="mt-6 border-t border-vangogh-gold/10 pt-5">
+                            <button onclick="openBooking('Eventos Corporativos o Escolares', 'Cotización por Grupo')" class="w-full py-3 rounded-full bg-vangogh-sky/50 hover:bg-vangogh-gold text-vangogh-cream hover:text-vangogh-cobalt border border-vangogh-gold/20 hover:border-transparent text-xs font-bold uppercase tracking-wider transition-all">
+                                Planificar Evento Grupal
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- BENTO BLOCK 4: NEW HIGHLY VISIBLE PROMOTIONAL STORE CALLOUT -->
+                    <div class="lg:col-span-7 glass-panel rounded-3xl p-8 relative overflow-hidden group hover:shadow-glow transition-all duration-500 flex flex-col justify-between min-h-[380px] border-2 border-vangogh-gold/30 bg-gradient-to-tr from-vangogh-sky/40 via-vangogh-cobalt to-[#0a203c]">
+                        <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-vangogh-gold/10 rounded-full blur-3xl group-hover:scale-110 transition-all duration-500"></div>
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-12 h-12 rounded-2xl bg-vangogh-gold/20 flex items-center justify-center border border-vangogh-gold/40">
+                                    <i class="fa-solid fa-store text-vangogh-gold text-lg"></i>
+                                </div>
+                                <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full uppercase font-bold tracking-wider">¡Lanzamiento 2026!</span>
+                            </div>
+                            <h3 class="font-serif text-3xl font-bold mb-3 text-vangogh-gold">Tienda de Materiales Exclusiva</h3>
+                            <p class="text-gray-300 font-light text-sm leading-relaxed mb-4">
+                                Hemos separado por completo nuestra tienda para brindarte un catálogo inmersivo e independiente. Encuentra pigmentos puros, soportes de lino belga, pinceles de cerda fina y herramientas profesionales del más alto calibre.
+                            </p>
+                            <div class="flex items-center gap-4 text-xs text-gray-400">
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-circle-check text-vangogh-gold text-[10px]"></i> Despacho Directo</span>
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-circle-check text-vangogh-gold text-[10px]"></i> Calidad Museográfica</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-5 border-t border-vangogh-gold/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <span class="text-xs text-vangogh-cream/70">¿Buscas herramientas profesionales?</span>
+                            <button onclick="switchView('store')" class="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gradient-to-r from-vangogh-gold to-yellow-500 text-vangogh-cobalt font-extrabold text-xs uppercase tracking-widest hover:scale-105 transition-all duration-300 shadow-glow">
+                                Entrar a la Tienda Oficial →
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- TUTORÍAS ESCOLARES DETAILED SECTION -->
+        <section id="tutorias" class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+            <div class="absolute -right-32 top-1/4 w-[500px] h-[500px] bg-gradient-to-l from-vangogh-gold/5 to-transparent rounded-full blur-[100px] -z-10"></div>
+            
+            <div class="flex flex-col lg:flex-row items-center gap-12">
+                <!-- Left Narrative Column -->
+                <div class="w-full lg:w-1/2 space-y-6">
+                    <span class="text-xs uppercase tracking-[0.25em] text-vangogh-gold font-bold block">Tutorías Escolares Personalizadas</span>
+                    <h2 class="font-serif text-4xl sm:text-5xl md:text-6xl font-bold tracking-wide leading-none text-vangogh-cream">
+                        Fortaleciendo conocimientos, <br>
+                        <span class="brush-highlight">sembrando confianza</span>
+                    </h2>
+                    <div class="w-20 h-1 bg-vangogh-gold rounded-full"></div>
+                    
+                    <p class="text-gray-300 text-base leading-relaxed font-light">
+                        Entendemos que cada niño y adolescente tiene un estilo de aprendizaje único. Nuestras tutorías escolares están diseñadas para acompañar y reforzar el aprendizaje en diferentes áreas académicas, brindar apoyo diario con las tareas escolares y desarrollar hábitos sólidos de estudio en un entorno libre de frustración y altamente motivador.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-vangogh-gold/10 text-vangogh-gold flex items-center justify-center shrink-0 border border-vangogh-gold/20">
+                                <i class="fa-solid fa-book-open text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-sm text-vangogh-cream">Refuerzo Académico</h4>
+                                <p class="text-xs text-gray-400">Matemáticas, lenguaje, ciencias y más áreas escolares básicas.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-vangogh-gold/10 text-vangogh-gold flex items-center justify-center shrink-0 border border-vangogh-gold/20">
+                                <i class="fa-solid fa-list-check text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-sm text-vangogh-cream">Apoyo Directo con Tareas</h4>
+                                <p class="text-xs text-gray-400">Asistencia estructurada para resolver pendientes del colegio del día.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-vangogh-gold/10 text-vangogh-gold flex items-center justify-center shrink-0 border border-vangogh-gold/20">
+                                <i class="fa-solid fa-brain text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-sm text-vangogh-cream">Hábitos de Estudio</h4>
+                                <p class="text-xs text-gray-400">Enseñanza de técnicas cognitivas, mapas mentales y organización.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-full bg-vangogh-gold/10 text-vangogh-gold flex items-center justify-center shrink-0 border border-vangogh-gold/20">
+                                <i class="fa-solid fa-graduation-cap text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-sm text-vangogh-cream">Preparación para Exámenes</h4>
+                                <p class="text-xs text-gray-400">Estrategias personalizadas para superar evaluaciones complejas.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6">
+                        <a href="#contacto-form" class="inline-flex items-center gap-2 px-6 py-3.5 bg-vangogh-sky/40 hover:bg-vangogh-sky/60 rounded-full border border-vangogh-gold/25 font-bold text-xs uppercase tracking-wider text-vangogh-cream transition-all">
+                            <span>Programar Entrevista de Diagnóstico</span>
+                            <i class="fa-solid fa-clipboard-user text-vangogh-gold"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Interactive Graphic/Cards Block -->
+                <div class="w-full lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <!-- Academic Card 1 -->
+                    <div class="glass-panel rounded-3xl p-6 border border-vangogh-gold/10 space-y-4 hover:scale-[1.03] transition-all">
+                        <div class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center border border-orange-500/20">
+                            <i class="fa-solid fa-shapes"></i>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold">Nivel Primario</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Enfoque lúdico, desarrollo de habilidades lógicas y fomento del amor por la lectura. Ayuda directa para comprender tareas diarias.
+                        </p>
+                        <span class="block text-[10px] text-vangogh-gold uppercase font-semibold">Grupos reducidos</span>
+                    </div>
+
+                    <!-- Academic Card 2 -->
+                    <div class="glass-panel rounded-3xl p-6 border border-vangogh-gold/10 space-y-4 hover:scale-[1.03] transition-all">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
+                            <i class="fa-solid fa-book-atlas"></i>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold">Básicos y Bachillerato</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Física fundamental, álgebra, química y comprensión lectora avanzada. Preparación orientada al éxito en evaluaciones complejas.
+                        </p>
+                        <span class="block text-[10px] text-vangogh-gold uppercase font-semibold">Acompañamiento individual</span>
+                    </div>
+
+                    <!-- Academic Card 3 -->
+                    <div class="sm:col-span-2 glass-panel rounded-3xl p-6 border-2 border-vangogh-gold/30 bg-gradient-to-r from-[#0d223e] to-[#07162c] flex flex-col sm:flex-row items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-vangogh-sky flex items-center justify-center shrink-0 border border-vangogh-gold/20 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=150&q=80" alt="Mentora Principal" class="w-full h-full object-cover">
+                        </div>
+                        <div class="space-y-1 text-center sm:text-left">
+                            <p class="text-xs text-gray-200 italic font-light">"Nuestras tutorías no solo resuelven las tareas del colegio; despiertan la curiosidad analítica integrada con su inteligencia creativa."</p>
+                            <span class="block text-[10px] uppercase font-bold text-vangogh-gold">— Msc. Helena Castro, Coordinadora Pedagógica</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROGRAM FOR ARTISTS SUPPORT SECTION -->
+        <section id="artistas" class="py-24 bg-[#051123] border-t border-b border-vangogh-gold/15">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col lg:flex-row items-center gap-12">
+                    <div class="w-full lg:w-1/2 space-y-6">
+                        <div class="w-12 h-12 rounded-2xl bg-vangogh-sky/40 flex items-center justify-center border border-vangogh-gold/20">
+                            <i class="fa-solid fa-handshake-angle text-vangogh-gold text-lg"></i>
+                        </div>
+                        <span class="text-xs uppercase tracking-widest text-vangogh-gold font-bold block">Programa de Fomento Cultural</span>
+                        <h2 class="font-serif text-4xl sm:text-5xl font-bold text-vangogh-cream leading-tight">Apoyo Integral para Artistas Emergentes</h2>
+                        <p class="text-gray-300 font-light text-sm sm:text-base leading-relaxed">
+                            Queremos ser la rampa de lanzamiento para tu genialidad. Si eres un artista emergente o consolidado, te apoyamos a través de nuestra red de exhibición física/virtual, estrategias de marketing y promoción para lograr la venta de tus piezas artísticas.
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                            <div class="bg-vangogh-cobalt/40 border border-vangogh-gold/10 p-4 rounded-2xl text-center">
+                                <span class="block font-serif text-2xl font-bold text-vangogh-gold">Exposición</span>
+                                <span class="text-[10px] text-gray-400">Espacios físicos y digitales de alta visibilidad</span>
+                            </div>
+                            <div class="bg-vangogh-cobalt/40 border border-vangogh-gold/10 p-4 rounded-2xl text-center">
+                                <span class="block font-serif text-2xl font-bold text-vangogh-gold">Promoción</span>
+                                <span class="text-[10px] text-gray-400">Campañas en redes, prensa y boletines del atelier</span>
+                            </div>
+                            <div class="bg-vangogh-cobalt/40 border border-vangogh-gold/10 p-4 rounded-2xl text-center">
+                                <span class="block font-serif text-2xl font-bold text-vangogh-gold">Ventas</span>
+                                <span class="text-[10px] text-gray-400">Estructura segura de cobros y embalaje de museo</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2 glass-panel p-8 rounded-[2rem] border border-vangogh-gold/20 relative overflow-hidden">
+                        <div class="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-bl from-vangogh-gold/5 to-transparent rounded-full blur-3xl -z-10"></div>
+                        <h3 class="font-serif text-3xl font-bold mb-4 text-vangogh-cream">Postula como Artista</h3>
+                        <p class="text-xs text-gray-400 mb-6 font-light">Envíanos un enlace a tu portafolio y nos comunicaremos contigo para agendar una curaduría en nuestra sala de exhibición.</p>
+                        <button onclick="openArtistApplicationModal()" class="w-full py-4 rounded-xl bg-gradient-to-r from-vangogh-gold to-vangogh-amber text-vangogh-cobalt font-bold text-xs uppercase tracking-widest shadow-glow hover:scale-[1.01] transition-all">
+                            Postular mi Portafolio Artístico
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MASTER INTAKE CONTACT FORM -->
+        <section id="contacto-form" class="py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="glass-panel rounded-[2.5rem] p-8 md:p-12 border border-vangogh-gold/20 relative overflow-hidden bg-gradient-to-tr from-[#07162c] via-[#0b203c] to-[#07162c]">
+                <div class="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-vangogh-gold/10 to-transparent rounded-full blur-3xl -z-10"></div>
+                
+                <div class="text-center max-w-2xl mx-auto mb-10 space-y-3">
+                    <span class="text-xs uppercase tracking-[0.25em] text-vangogh-gold font-bold block">Inscripciones Abiertas 2026</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold tracking-wide">Comienza tu viaje creativo o académico</h2>
+                    <p class="text-gray-300 text-xs sm:text-sm font-light">Completa este breve formulario del atelier y un coordinador pedagógico o artístico se comunicará contigo de inmediato para agendar tu horario o despejar tus dudas.</p>
+                </div>
+
+                <form onsubmit="submitContactForm(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="contact-name" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Nombre Completo</label>
+                            <input type="text" id="contact-name" required class="w-full bg-vangogh-cobalt/65 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm transition-colors" placeholder="Vincent van Gogh">
+                        </div>
+                        <div>
+                            <label for="contact-phone" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Teléfono de Contacto</label>
+                            <input type="tel" id="contact-phone" required class="w-full bg-vangogh-cobalt/65 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm transition-colors" placeholder="+502 4444 8888">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="contact-service" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">¿En qué servicio estás interesado?</label>
+                        <select id="contact-service" required class="w-full bg-vangogh-cobalt/80 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm transition-colors">
+                            <option value="clases_arte" selected>Academias de Arte (Óleo, Acuarela, Escultura, Manualidades)</option>
+                            <option value="musica">Clases de Música (Bajo / Guitarra)</option>
+                            <option value="tutorias">Tutorías Escolares / Apoyo con tareas</option>
+                            <option value="corporativo">Actividades Corporativas o Escolares (Grupos Grandes)</option>
+                            <option value="apoyo_artista">Apoyo a Artistas (Exposición / Promoción / Venta)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="contact-message" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Déjanos un Mensaje o Consulta</label>
+                        <textarea id="contact-message" rows="4" class="w-full bg-vangogh-cobalt/65 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm transition-colors" placeholder="Cuéntanos sobre tu nivel de experiencia, el grado escolar de tu hijo, o las especificaciones de tu interés..."></textarea>
+                    </div>
+
+                    <div class="flex items-start gap-3 bg-vangogh-sky/40 border border-vangogh-gold/10 p-4 rounded-xl">
+                        <i class="fa-solid fa-bell-concierge text-vangogh-gold text-lg shrink-0 mt-0.5 animate-bounce"></i>
+                        <p class="text-xs text-gray-300 leading-normal">
+                            Al enviar este formulario, garantizamos una atención 100% personalizada. Te asignaremos un mentor especializado de nuestro equipo para agendar la fecha ideal de diagnóstico o visita.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-vangogh-gold to-vangogh-amber text-vangogh-cobalt font-bold tracking-wider uppercase text-xs hover:scale-[1.01] transition-transform shadow-glow">
+                        Enviar Solicitud de Información
+                    </button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <!-- VIEW CONTAINER 2: DEDICATED ONLINE STORE (Initially Hidden) -->
+    <div id="store-view-container" class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 hidden">
+        
+        <!-- Store Header & Poetic introduction -->
+        <div class="border-b border-vangogh-gold/15 pb-8 mb-12 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
+            <div class="space-y-3">
+                <button onclick="switchView('landing')" class="text-xs font-bold text-vangogh-gold uppercase tracking-wider hover:text-white transition-colors flex items-center gap-1.5 mb-2">
+                    <i class="fa-solid fa-arrow-left"></i> Volver al Atelier Central
+                </button>
+                <h2 class="font-serif text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-vangogh-gold via-vangogh-amber to-yellow-100">
+                    Suministros del Maestro
+                </h2>
+                <p class="text-gray-300 font-light text-sm max-w-2xl leading-relaxed">
+                    El mismo calibre de pigmentos puros, soportes de lino fino, arcillas e instrumentos de alta gama utilizados en nuestras academias para garantizar que tus trazos perduren en la eternidad.
+                </p>
+            </div>
+
+            <!-- Fast indicators and Cart count action -->
+            <div class="flex items-center gap-4 bg-vangogh-sky/30 border border-vangogh-gold/15 rounded-2xl p-4 backdrop-blur-md">
+                <i class="fa-solid fa-medal text-vangogh-gold text-2xl animate-pulse"></i>
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider block text-vangogh-cream">Atelier Suministros</span>
+                    <span class="text-[10px] text-gray-400 block">Soporte técnico directo de artistas</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Advanced Filter Controls -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-8">
+            <!-- Search Bar -->
+            <div class="md:col-span-6 relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <input type="text" id="store-search" oninput="filterStoreProducts()" placeholder="Buscar pinceles, óleos, soportes o arcillas..." class="w-full bg-vangogh-cobalt/80 border border-vangogh-gold/25 rounded-2xl pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:border-vangogh-gold focus:ring-1 focus:ring-vangogh-gold text-vangogh-cream transition-colors placeholder:text-gray-500 shadow-gold-border">
+            </div>
+
+            <!-- Category Tabs Selector -->
+            <div class="md:col-span-6 flex flex-wrap gap-2 items-center justify-start md:justify-end">
+                <button onclick="selectStoreCategory('all')" class="store-category-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-vangogh-gold text-vangogh-cobalt transition-all">Todos</button>
+                <button onclick="selectStoreCategory('oleos')" class="store-category-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-vangogh-sky/50 text-vangogh-cream border border-vangogh-gold/15 hover:border-vangogh-gold hover:text-vangogh-gold transition-all">Óleos & Acrílicos</button>
+                <button onclick="selectStoreCategory('acuarelas')" class="store-category-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-vangogh-sky/50 text-vangogh-cream border border-vangogh-gold/15 hover:border-vangogh-gold hover:text-vangogh-gold transition-all">Acuarela & Dibujo</button>
+                <button onclick="selectStoreCategory('soportes')" class="store-category-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-vangogh-sky/50 text-vangogh-cream border border-vangogh-gold/15 hover:border-vangogh-gold hover:text-vangogh-gold transition-all">Soportes & Papel</button>
+                <button onclick="selectStoreCategory('escultura')" class="store-category-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-vangogh-sky/50 text-vangogh-cream border border-vangogh-gold/15 hover:border-vangogh-gold hover:text-vangogh-gold transition-all">Escultura & Modelado</button>
+            </div>
+        </div>
+
+        <!-- STORE CONTENT GRID -->
+        <div id="store-products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Dynamically populated from script area -->
+        </div>
+
+        <!-- NO RESULTS PLACEHOLDER -->
+        <div id="store-no-results" class="hidden text-center py-24 space-y-4">
+            <i class="fa-solid fa-paintbrush text-6xl text-vangogh-gold/10 block"></i>
+            <p class="font-serif text-2xl text-gray-400">No encontramos resultados para tu búsqueda</p>
+            <p class="text-xs text-gray-500 max-w-sm mx-auto">Prueba buscando palabras como "Acuarelas", "Pinceles", "Óleos" o cambia de categoría.</p>
+        </div>
+    </div>
+
+    <!-- POETIC STARRY FOOTER -->
+    <footer class="bg-[#030a14] text-vangogh-cream/70 border-t border-vangogh-gold/15 py-16 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
+            <!-- Column 1: Philosophy -->
+            <div class="space-y-4">
+                <a href="#" onclick="switchView('landing')" class="flex items-center gap-3">
+                    <span class="font-serif text-2xl tracking-wider font-bold text-vangogh-cream">LA PALETA</span>
+                </a>
+                <p class="text-xs text-gray-400 leading-relaxed font-light">
+                    Honrando la intensidad del trazo y el empaste vibrante del color que Vincent van Gogh inmortalizó. Unificando el arte, la música y la excelencia académica para toda la familia.
+                </p>
+                <div class="flex items-center gap-4 text-sm text-vangogh-gold pt-2">
+                    <a href="#" class="hover:text-vangogh-cream transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="hover:text-vangogh-cream transition-colors" aria-label="Pinterest"><i class="fa-brands fa-pinterest"></i></a>
+                    <a href="#" class="hover:text-vangogh-cream transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="hover:text-vangogh-cream transition-colors" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <!-- Column 2: Academias -->
+            <div class="space-y-4">
+                <h4 class="font-serif text-lg font-semibold tracking-wider text-vangogh-gold">Servicios & Academias</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#" onclick="switchView('landing'); setTimeout(() => document.getElementById('galeria').scrollIntoView(), 100)" class="hover:text-vangogh-gold transition-colors block">Galería del Mes</a></li>
+                    <li><a href="#" onclick="switchView('landing'); setTimeout(() => document.getElementById('academias').scrollIntoView(), 100)" class="hover:text-vangogh-gold transition-colors block">Clases de Arte (Todas las ramas)</a></li>
+                    <li><a href="#" onclick="switchView('landing'); setTimeout(() => document.getElementById('academias').scrollIntoView(), 100)" class="hover:text-vangogh-gold transition-colors block">Clases de Música (Bajo / Guitarra)</a></li>
+                    <li><a href="#" onclick="switchView('landing'); setTimeout(() => document.getElementById('tutorias').scrollIntoView(), 100)" class="hover:text-vangogh-gold transition-colors block">Tutorías Escolares y Tareas</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Contact details -->
+            <div class="space-y-4">
+                <h4 class="font-serif text-lg font-semibold tracking-wider text-vangogh-gold">El Taller de Encuentro</h4>
+                <ul class="space-y-2 text-xs text-gray-400 font-light">
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-vangogh-gold"></i> Paseo del Arte #404, Zona de Distritos</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-envelope text-vangogh-gold"></i> info@paletavangogh.com</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-phone text-vangogh-gold"></i> +502 2300-4411</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-clock text-vangogh-gold"></i> Lun a Sab: 08:30 AM - 07:00 PM</li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Newsletter -->
+            <div class="space-y-4">
+                <h4 class="font-serif text-lg font-semibold tracking-wider text-vangogh-gold">Boletín por WhatsApp</h4>
+                <p class="text-xs text-gray-400 font-light">Recibe avisos exclusivos sobre historia del arte, nuevos lanzamientos de pigmentos y fechas de talleres en tu celular.</p>
+                <form onsubmit="subscribeNewsletter(event)" class="flex gap-2">
+                    <input type="tel" required placeholder="Tu teléfono de WhatsApp" class="bg-vangogh-cobalt/60 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-vangogh-gold w-full text-vangogh-cream">
+                    <button type="submit" class="px-4 rounded-xl bg-vangogh-gold hover:bg-vangogh-cream text-vangogh-cobalt transition-colors duration-300 flex items-center justify-center" aria-label="Enviar suscripción">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-8 border-t border-vangogh-gold/10 text-center relative z-10">
+            <p class="text-[10px] text-gray-500 uppercase tracking-widest">&copy; 2026 La Paleta de Van Gogh. Todos los derechos estéticos y académicos reservados. Sede Central Centroamérica.</p>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE SIDE SHOPPING CART PANEL -->
+    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-vangogh-cobalt/95 backdrop-blur-2xl border-l border-vangogh-gold/20 shadow-glow-lg transform translate-x-full transition-transform duration-500 z-50 flex flex-col justify-between hidden">
+        <div class="p-6 overflow-y-auto flex-grow">
+            <!-- Header Cart -->
+            <div class="flex items-center justify-between border-b border-vangogh-gold/15 pb-6 mb-6">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-bag-shopping text-vangogh-gold text-2xl"></i>
+                    <h3 class="font-serif text-3xl font-bold text-vangogh-cream">Tu Carrito</h3>
+                </div>
+                <button onclick="toggleCart()" class="p-2 rounded-full hover:bg-vangogh-sky/40 text-vangogh-cream hover:text-vangogh-gold" aria-label="Cerrar carrito">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- List items dynamic -->
+            <div id="cart-items-container" class="space-y-4">
+                <div class="text-center py-12 text-gray-400 space-y-3">
+                    <i class="fa-solid fa-palette text-5xl text-vangogh-gold/15 block"></i>
+                    <p class="font-serif text-lg">Tu lienzo está vacío...</p>
+                    <p class="text-xs">Añade materiales artísticos del taller para comenzar.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-vangogh-gold/15 bg-vangogh-sky/30">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xs text-gray-300 uppercase tracking-wider font-semibold">Subtotal de Compra</span>
+                <span id="cart-total" class="font-serif text-2xl font-bold text-vangogh-gold">$0.00</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mb-6 font-light">
+                * El despacho de tus materiales artísticos se coordina de manera directa por nuestro equipo de logística física para garantizar la conservación de tus herramientas.
+            </p>
+            <button onclick="processPurchase()" class="w-full py-4 rounded-full bg-gradient-to-r from-vangogh-gold to-vangogh-amber text-vangogh-cobalt font-bold tracking-wider uppercase text-xs hover:scale-[1.02] transition-transform shadow-glow">
+                Confirmar Adquisición de Suministros
+            </button>
+        </div>
+    </div>
+
+    <!-- TOAST POPUP NOTIFICATIONS -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 glass-panel border border-vangogh-gold/50 px-6 py-4 rounded-2xl shadow-glow-lg transform translate-y-24 opacity-0 transition-all duration-500 z-50 flex items-center gap-3 pointer-events-none">
+        <div class="w-8 h-8 rounded-full bg-vangogh-gold text-vangogh-cobalt flex items-center justify-center">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div>
+            <span id="toast-title" class="block text-xs font-bold uppercase tracking-wider text-vangogh-gold">Título</span>
+            <span id="toast-message" class="text-xs text-vangogh-cream font-light">Mensaje del sistema.</span>
+        </div>
+    </div>
+
+    <!-- BOOKING ACADEMY MODAL -->
+    <div id="booking-modal" class="fixed inset-0 bg-vangogh-cobalt/85 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="w-full max-w-lg glass-panel rounded-3xl overflow-hidden border border-vangogh-gold/30 flex flex-col">
+            <div class="p-6 border-b border-vangogh-gold/15 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] text-vangogh-gold uppercase tracking-widest font-bold">Reserva de Academia</span>
+                    <h3 id="modal-class-title" class="font-serif text-2xl font-bold text-vangogh-cream">Taller</h3>
+                </div>
+                <button onclick="closeBookingModal()" class="p-2 rounded-full hover:bg-vangogh-sky/40 text-vangogh-cream hover:text-vangogh-gold" aria-label="Cerrar reserva">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="submitBooking(event)" class="p-6 space-y-4">
+                <div>
+                    <label for="booking-name" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Nombre del Alumno / Tutor</label>
+                    <input type="text" required id="booking-name" class="w-full bg-vangogh-cobalt/50 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm" placeholder="Ej. Vincent van Gogh">
+                </div>
+                <div>
+                    <label for="booking-phone" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Teléfono de Contacto</label>
+                    <input type="tel" required id="booking-phone" class="w-full bg-vangogh-cobalt/50 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm" placeholder="+502 5555 1234">
+                </div>
+                <div>
+                    <label for="booking-modality" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Modalidad Preferida</label>
+                    <select id="booking-modality" class="w-full bg-vangogh-cobalt/80 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm">
+                        <option value="presencial">Presencial (Sede Atelier Central)</option>
+                        <option value="virtual">Virtual Interactive (Streaming HD)</option>
+                    </select>
+                </div>
+                <div class="bg-vangogh-sky/30 border border-vangogh-gold/15 p-4 rounded-xl">
+                    <span class="text-xs font-semibold block text-vangogh-gold">Duración e Inversión:</span>
+                    <span id="modal-class-price" class="text-xs text-gray-300">Sujeto a plan mensual corporativo o escolar.</span>
+                </div>
+                <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-vangogh-gold to-vangogh-amber text-vangogh-cobalt font-bold tracking-wider uppercase text-xs hover:scale-[1.01] transition-transform">
+                    Confirmar Pre-Inscripción de Academia
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- STORE ITEM QUICK VIEW MODAL -->
+    <div id="product-quickview-modal" class="fixed inset-0 bg-vangogh-cobalt/90 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="w-full max-w-2xl glass-panel rounded-3xl overflow-hidden border border-vangogh-gold/30 flex flex-col md:flex-row">
+            <!-- Product Visual area -->
+            <div class="w-full md:w-1/2 aspect-square bg-[#030a14] relative p-6 flex items-center justify-center">
+                <img id="quickview-img" src="" alt="Vista Previa de Producto" class="max-w-full max-h-full object-contain rounded-xl">
+                <span id="quickview-category-badge" class="absolute top-4 left-4 bg-vangogh-gold text-vangogh-cobalt text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Acuarelas</span>
+            </div>
+
+            <!-- Product Specs & purchase area -->
+            <div class="w-full md:w-1/2 p-6 flex flex-col justify-between border-t md:border-t-0 md:border-l border-vangogh-gold/20">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <h3 id="quickview-title" class="font-serif text-3xl font-bold text-vangogh-cream leading-tight">Producto de Arte</h3>
+                        <button onclick="closeProductQuickView()" class="p-1 rounded-full hover:bg-vangogh-sky/40 text-vangogh-cream hover:text-vangogh-gold" aria-label="Cerrar modal">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+                    <span id="quickview-price" class="font-serif text-2xl font-bold text-vangogh-gold block">$0.00</span>
+                    <p id="quickview-desc" class="text-xs text-gray-300 leading-relaxed font-light">
+                        Breve descripción de la calidad, densidad y los componentes del producto exclusivo.
+                    </p>
+                    <div class="bg-vangogh-cobalt/40 border border-vangogh-gold/10 p-3 rounded-xl text-[10px] text-gray-400 space-y-1">
+                        <span class="block text-vangogh-cream font-semibold">Especificaciones:</span>
+                        <p id="quickview-specs">Envase premium, pigmento natural resistente a la degradación solar.</p>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-vangogh-gold/15 mt-4">
+                    <button id="quickview-add-btn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-vangogh-gold to-vangogh-amber text-vangogh-cobalt font-bold tracking-wider uppercase text-xs hover:scale-[1.01] transition-transform shadow-glow flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cart-plus"></i> Añadir al Taller
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ARTIST SUBMISSION APPLICATION MODAL -->
+    <div id="artist-modal" class="fixed inset-0 bg-vangogh-cobalt/85 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="w-full max-w-lg glass-panel rounded-3xl overflow-hidden border border-vangogh-gold/30 flex flex-col">
+            <div class="p-6 border-b border-vangogh-gold/15 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] text-vangogh-gold uppercase tracking-widest font-bold">Programa de Apoyo Cultural</span>
+                    <h3 class="font-serif text-2xl font-bold text-vangogh-cream">Postulación de Portafolio</h3>
+                </div>
+                <button onclick="closeArtistApplicationModal()" class="p-2 rounded-full hover:bg-vangogh-sky/40 text-vangogh-cream hover:text-vangogh-gold" aria-label="Cerrar postulación">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="submitArtistApplication(event)" class="p-6 space-y-4">
+                <div>
+                    <label for="artist-name" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Nombre Artístico</label>
+                    <input type="text" required id="artist-name" class="w-full bg-vangogh-cobalt/50 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm" placeholder="Ej. Theo van Rysselberghe">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="artist-phone" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Teléfono / WhatsApp</label>
+                        <input type="tel" required id="artist-phone" class="w-full bg-vangogh-cobalt/50 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm" placeholder="+502 5555 1234">
+                    </div>
+                    <div>
+                        <label for="artist-specialty" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Especialidad</label>
+                        <input type="text" required id="artist-specialty" class="w-full bg-vangogh-cobalt/50 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm" placeholder="Ej. Óleo Impresionista">
+                    </div>
+                </div>
+                <div>
+                    <label for="artist-portfolio" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Enlace a Portafolio o Redes Sociales</label>
+                    <input type="url" required id="artist-portfolio" class="w-full bg-vangogh-cobalt/50 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm" placeholder="https://instagram.com/tuperfil">
+                </div>
+                <div>
+                    <label for="artist-style-desc" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Breve Descripción de tu Estilo</label>
+                    <textarea rows="3" id="artist-style-desc" class="w-full bg-vangogh-cobalt/50 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm" placeholder="Cuéntanos la historia de tus obras..."></textarea>
+                </div>
+                <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-vangogh-gold to-vangogh-amber text-vangogh-cobalt font-bold tracking-wider uppercase text-xs hover:scale-[1.01] transition-transform">
+                    Enviar Portafolio para Evaluación
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FULL SCREEN INTERACTIVE GALLERY LIGHTBOX -->
+    <div id="gallery-lightbox" class="fixed inset-0 bg-vangogh-cobalt/98 backdrop-blur-2xl z-50 flex items-center justify-center p-4 md:p-8 opacity-0 pointer-events-none transition-all duration-300 overflow-y-auto">
+        <div class="w-full max-w-6xl glass-panel rounded-3xl overflow-hidden border border-vangogh-gold/30 flex flex-col lg:flex-row relative">
+            <button onclick="closeGalleryLightbox()" class="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-vangogh-cobalt/85 border border-vangogh-gold/30 text-vangogh-cream hover:text-vangogh-gold flex items-center justify-center transition-colors" aria-label="Cerrar visor">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Lightbox Painting Frame Area -->
+            <div class="w-full lg:w-3/5 bg-[#030a14] p-6 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[450px] lg:min-h-[550px] relative">
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-vangogh-gold/5 to-transparent pointer-events-none"></div>
+                <div class="relative max-w-full max-h-[75vh] museum-frame rounded-md p-1 bg-[#151515]">
+                    <img id="lightbox-art-image" src="" alt="Obra de Arte Ampliada" class="max-w-full max-h-[60vh] object-contain rounded">
+                </div>
+            </div>
+
+            <!-- Lightbox Curatorial Card Area -->
+            <div class="w-full lg:w-2/5 p-8 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-vangogh-gold/20 bg-vangogh-charcoal/80">
+                <div class="space-y-6">
+                    <div>
+                        <span id="lightbox-art-technique" class="text-[10px] uppercase tracking-widest font-bold text-vangogh-gold">Técnica Curada</span>
+                        <h3 id="lightbox-art-title" class="font-serif text-3xl sm:text-4xl font-bold text-vangogh-cream mt-1 leading-tight">Título de la Obra</h3>
+                        <p class="text-xs text-gray-400 mt-1">Por: <span id="lightbox-art-artist" class="text-vangogh-cream font-medium">Artista</span> | Año <span id="lightbox-art-year">2026</span></p>
+                    </div>
+
+                    <div class="w-16 h-[1px] bg-vangogh-gold/40"></div>
+
+                    <div class="space-y-2">
+                        <h4 class="text-xs uppercase tracking-wider text-vangogh-gold font-bold">Descripción de la Curaduría</h4>
+                        <p id="lightbox-art-desc" class="text-xs sm:text-sm text-gray-300 leading-relaxed font-light">
+                            Una pieza descriptiva de la obra y la inspiración del artista que profundiza en la técnica de pinceladas gruesas y el juego de luces y sombras.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 pt-2">
+                        <div class="bg-vangogh-cobalt/40 border border-vangogh-gold/10 p-3 rounded-xl">
+                            <span class="text-[9px] text-gray-400 block uppercase">Dimensiones</span>
+                            <span id="lightbox-art-dimensions" class="text-xs font-semibold text-vangogh-cream">80x100 cm</span>
+                        </div>
+                        <div class="bg-vangogh-cobalt/40 border border-vangogh-gold/10 p-3 rounded-xl">
+                            <span class="text-[9px] text-gray-400 block uppercase">Estado</span>
+                            <span class="text-xs font-semibold text-emerald-400 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                                Disponible
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t border-vangogh-gold/15 mt-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-300 uppercase font-semibold">Precio de Tasación</span>
+                        <span id="lightbox-art-price" class="font-serif text-2xl font-bold text-vangogh-gold">$1,200.00</span>
+                    </div>
+                    <button id="lightbox-purchase-btn" onclick="initiateArtPurchase()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-vangogh-gold to-vangogh-amber text-vangogh-cobalt font-bold tracking-wider uppercase text-xs hover:scale-[1.02] transition-transform shadow-glow">
+                        Me Interesa Adquirir esta Obra
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ARTWORK ACQUISITION INTEREST MODAL -->
+    <div id="art-purchase-modal" class="fixed inset-0 bg-vangogh-cobalt/90 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="w-full max-w-md glass-panel rounded-3xl overflow-hidden border border-vangogh-gold/30 flex flex-col">
+            <div class="p-6 border-b border-vangogh-gold/15 flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] text-vangogh-gold uppercase tracking-widest font-bold">Adquisición de Obra Física</span>
+                    <h3 id="purchase-modal-title" class="font-serif text-xl font-bold text-vangogh-cream">Título de Obra</h3>
+                </div>
+                <button onclick="closeArtPurchaseModal()" class="p-2 rounded-full hover:bg-vangogh-sky/40 text-vangogh-cream hover:text-vangogh-gold" aria-label="Cerrar modal de compra">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="submitArtPurchase(event)" class="p-6 space-y-4">
+                <input type="hidden" id="purchase-art-id">
+                <div>
+                    <label for="purchase-name" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Nombre Completo del Coleccionista</label>
+                    <input type="text" required id="purchase-name" class="w-full bg-vangogh-cobalt/50 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm" placeholder="Vincent van Gogh">
+                </div>
+                <div>
+                    <label for="purchase-phone" class="block text-xs uppercase tracking-widest text-gray-300 font-bold mb-2">Teléfono Móvil (WhatsApp preferible)</label>
+                    <input type="tel" required id="purchase-phone" class="w-full bg-vangogh-cobalt/50 border border-vangogh-gold/20 rounded-xl px-4 py-3 text-vangogh-cream focus:outline-none focus:border-vangogh-gold text-sm" placeholder="+502 4444 1234">
+                </div>
+                <div class="bg-vangogh-sky/30 border border-vangogh-gold/15 p-4 rounded-xl text-xs space-y-1">
+                    <p class="text-vangogh-gold font-bold">Proceso de Adquisición:</p>
+                    <p class="text-gray-300 leading-normal">Al enviar esta solicitud, nuestro comisario de arte se contactará contigo para coordinar el certificado físico de autenticidad y el embalaje museográfico seguro.</p>
+                </div>
+                <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-vangogh-gold to-vangogh-amber text-vangogh-cobalt font-bold tracking-wider uppercase text-xs hover:scale-[1.01] transition-transform">
+                    Enviar Propuesta de Adquisición
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ARTIST INTERACTIVE POPUP MESSAGE SYSTEM -->
+    <div id="custom-alert-box" class="fixed inset-0 bg-vangogh-cobalt/85 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="max-w-md w-full glass-panel rounded-[2rem] p-8 border border-vangogh-gold/30 text-center space-y-5">
+            <div class="w-14 h-14 rounded-full bg-vangogh-gold/10 text-vangogh-gold flex items-center justify-center mx-auto border border-vangogh-gold/25">
+                <i class="fa-solid fa-palette text-2xl"></i>
+            </div>
+            <h4 class="font-serif text-3xl font-bold text-vangogh-cream">Mensaje del Atelier</h4>
+            <p id="custom-alert-message" class="text-xs sm:text-sm text-gray-300 leading-relaxed font-light">Mensaje informativo del sistema.</p>
+            <button onclick="closeAlert()" class="w-full py-3.5 rounded-xl bg-vangogh-gold text-vangogh-cobalt font-bold text-xs uppercase tracking-wider">Aceptar / Seguir Creando</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT SYSTEM ENGINE -->
+    <script>
+        // ARTWORKS GALLERY COLLECTION DATA
+        const artworksData = [
+            {
+                id: 1,
+                title: "Atardecer en los Cipreses",
+                artist: "Camila Sandoval",
+                technique: "Óleo sobre lienzo (Técnica de Espátula / Empaste)",
+                year: "2026",
+                category: "oleo",
+                dimensions: "90 x 110 cm",
+                price: 1350.00,
+                image: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=800&q=80",
+                description: "Una poderosa reinterpretación de la naturaleza rural con el dinamismo que caracteriza a Van Gogh. Las pinceladas de empaste grueso simulan el fluir tormentoso pero rítmico de la luz solar incidiendo sobre las hojas de ciprés."
+            },
+            {
+                id: 2,
+                title: "Girasoles del Alma",
+                artist: "Federico Moreno",
+                technique: "Acrílico texturizado",
+                year: "2026",
+                category: "oleo",
+                dimensions: "80 x 100 cm",
+                price: 980.00,
+                image: "https://images.unsplash.com/photo-1579783928621-7a13d66a6211?auto=format&fit=crop&w=800&q=80",
+                description: "Este bodegón captura el esplendor de las flores amarillas vibrando con matices de tierra quemada. Representa la resiliencia artística del taller central, transmitiendo energía solar y calidez."
+            },
+            {
+                id: 3,
+                title: "Reflejo de Estrellas en el Lago",
+                artist: "Elena Castro",
+                technique: "Acuarela fina sobre papel de lino de 300g",
+                year: "2025",
+                category: "acuarela",
+                dimensions: "50 x 70 cm",
+                price: 520.00,
+                image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=800&q=80",
+                description: "Un dominio técnico de la acuarela que genera veladuras transparentes en el cielo y agua del lago. El flujo cromático de azules cobaltos y amarillos evoca sutilmente las composiciones de cielos turbulentos."
+            },
+            {
+                id: 4,
+                title: "Geometría Estelar de la Noche",
+                artist: "David Santisteban",
+                technique: "Tinta y plumilla con aguada de grafito",
+                year: "2026",
+                category: "acuarela",
+                dimensions: "60 x 80 cm",
+                price: 450.00,
+                image: "https://images.unsplash.com/photo-1579783922619-2a1e97f0133a?auto=format&fit=crop&w=800&q=80",
+                description: "Líneas de alta precisión geométrica que se interceptan con un remolino orgánico de grafito diluido. Muestra la perfecta simbiosis entre el pensamiento analítico y la pasión creativa."
+            },
+            {
+                id: 5,
+                title: "Grito del Ciprés Dorado",
+                artist: "Mateo Silva",
+                technique: "Escultura en terracota policromada y pan de oro",
+                year: "2026",
+                category: "escultura",
+                dimensions: "45 x 30 x 30 cm",
+                price: 1600.00,
+                image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=800&q=80",
+                description: "Modelado manual en arcilla terracota, recubierto de sutiles láminas de oro y óleos. Representa el crecimiento vertical orgánico que emerge de la tierra hacia los vientos estelares de la noche."
+            },
+            {
+                id: 6,
+                title: "Arpegio Cromático",
+                artist: "Sofía de León",
+                technique: "Modelado estructural de resina de mármol y acrílicos",
+                year: "2026",
+                category: "escultura",
+                dimensions: "60 x 40 x 30 cm",
+                price: 1850.00,
+                image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
+                description: "Escultura de resina fluida de mármol que asemeja ondas musicales de bajo y guitarra fundiéndose con espirales de color de pintura física. Una obra que une la sinestesia de música y pintura."
+            }
+        ];
+
+        // PREMIUM STORE PRODUCTS DYNAMIC CATALOG (100% Focused Store)
+        const storeProductsData = [
+            {
+                id: 101,
+                name: "Set Acuarelas Profesionales",
+                price: 38.90,
+                category: "acuarelas",
+                image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=400&q=80",
+                desc: "Paleta metálica curada de 24 pastillas con pigmentación orgánica y goma arábiga Kordofán, garantizando una solubilidad y transparencia inigualable.",
+                specs: "Estuche metálico, incluye pincel recargable de agua y paleta mezcladora integrada."
+            },
+            {
+                id: 102,
+                name: "Óleos Girasol Dorado - Set 6 Tubos",
+                price: 26.00,
+                category: "oleos",
+                image: "https://images.unsplash.com/photo-1599687267812-35c02fc5a26d?auto=format&fit=crop&w=400&q=80",
+                desc: "Surtido especial elaborado con aceite de linaza purificado y alta concentración de óxidos naturales de hierro. Ideal para técnicas de empastes densos.",
+                specs: "6 tubos de 40ml. Colores: Amarillo Girasol, Cobalto, Verde Ciprés, Oro, Tierra Quemada y Blanco de Titanio."
+            },
+            {
+                id: 103,
+                name: "Block Papel Lino Belga 300g",
+                price: 19.50,
+                category: "soportes",
+                image: "https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?auto=format&fit=crop&w=400&q=80",
+                desc: "Hojas de lino natural belga de prensado en frío con encolado interno y externo. Soporta cargas abundantes de agua sin deformación alguna.",
+                specs: "Formato A4. 20 hojas libres de ácido para técnicas húmedas, secas y mixtas."
+            },
+            {
+                id: 104,
+                name: "Arcilla Terracota Refinada",
+                price: 14.00,
+                category: "escultura",
+                image: "https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&w=400&q=80",
+                desc: "Masa arcillosa pura sedimentaria, de excelente plasticidad. Ideal para modelado de bustos y figuras anatómicas en nuestras academias.",
+                specs: "Bloque de 5kg. Secado rápido al aire o cocción en horno cerámico de 950°C."
+            },
+            {
+                id: 105,
+                name: "Pinceles de Cerda Fina de Marta (Set de 5)",
+                price: 45.00,
+                category: "oleos",
+                image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=400&q=80",
+                desc: "Pelos genuinos seleccionados para la absorción idónea del medio de linaza. Permiten realizar desde veladuras finas hasta trazos impetuosos.",
+                specs: "Pinceles planos, lengua de gato y redondos con mangos largos de madera barnizada."
+            },
+            {
+                id: 106,
+                name: "Estuche de Carboncillos y Plumillas del Atelier",
+                price: 22.50,
+                category: "acuarelas",
+                image: "https://images.unsplash.com/photo-1579783922619-2a1e97f0133a?auto=format&fit=crop&w=400&q=80",
+                desc: "La herramienta del bocetador clásico. Carboncillos naturales de sauce quemado que brindan sombras aterciopeladas y difuminados excelentes.",
+                specs: "Contiene 10 carboncillos de diámetros mixtos, 2 plumillas de metal fino y block difuminador."
+            },
+            {
+                id: 107,
+                name: "Crayones de Cera Extra Finos (Set de 36)",
+                price: 32.00,
+                category: "acuarelas",
+                image: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=400&q=80",
+                desc: "Barras grasas de alta solubilidad ideales para combinar técnicas de rayado tradicional y raspado de color sobre papel húmedo.",
+                specs: "36 tonalidades intensas con estuche protector de madera."
+            },
+            {
+                id: 108,
+                name: "Caballete Profesional de Haya Ajustable",
+                price: 89.90,
+                category: "soportes",
+                image: "https://images.unsplash.com/photo-1599687267812-35c02fc5a26d?auto=format&fit=crop&w=400&q=80",
+                desc: "Estructura de madera noble de haya tratada con aceites protectores. Estabilidad perfecta para lienzos de gran formato de hasta 1.20 metros.",
+                specs: "Caballete trípode plegable, inclinación regulable de 0 a 90 grados."
+            }
+        ];
+
+        // STATE MANAGEMENT
+        let currentView = 'landing'; // 'landing' | 'store'
+        let cart = [];
+        let storeCategory = 'all';
+
+        // SPA ROUTER SYSTEM
+        function switchView(view) {
+            currentView = view;
+            const landingContainer = document.getElementById('landing-view-container');
+            const storeContainer = document.getElementById('store-view-container');
+            
+            const mainNavLinks = document.getElementById('main-nav-links');
+            const storeNavLinks = document.getElementById('store-nav-links');
+            const storeBtn = document.getElementById('store-toggle-btn');
+
+            if (view === 'store') {
+                landingContainer.classList.add('hidden');
+                storeContainer.classList.remove('hidden');
+                
+                // Switch Header Nav Link areas
+                mainNavLinks.classList.add('hidden');
+                storeNavLinks.classList.remove('hidden');
+                
+                // Highlight Store Button
+                storeBtn.className = "relative overflow-hidden group px-5 py-2.5 rounded-full border border-vangogh-gold bg-vangogh-cobalt text-vangogh-gold font-extrabold text-xs tracking-wider uppercase shadow-glow hover:bg-vangogh-gold hover:text-vangogh-cobalt transition-all duration-300 flex items-center gap-2";
+                
+                // Populate and focus store elements
+                renderStoreProducts();
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            } else {
+                landingContainer.classList.remove('hidden');
+                storeContainer.classList.add('hidden');
+                
+                // Restore Header Nav links
+                mainNavLinks.classList.remove('hidden');
+                storeNavLinks.classList.add('hidden');
+                
+                // Reset Store Button Style
+                storeBtn.className = "relative overflow-hidden group px-5 py-2.5 rounded-full bg-gradient-to-r from-vangogh-gold to-yellow-500 text-vangogh-cobalt font-extrabold text-xs tracking-wider uppercase shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all duration-300 flex items-center gap-2";
+                
+                // Recalculate stars and adjust canvas container bounds
+                resizeCanvas();
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            }
+        }
+
+        // INTERACTIVE STARRY NIGHT CANVAS ENGINE (SWIRLS & CONSTELLATIONS)
+        const canvas = document.getElementById('starryCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 130 };
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            initStarrySky();
+        }
+
+        class StarryNightParticle {
+            constructor(x, y, size, color, speed, angle, swirlFactor) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.color = color;
+                this.speed = speed;
+                this.angle = angle;
+                this.swirlFactor = swirlFactor;
+                this.density = (Math.random() * 25) + 5;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = this.size * 2.5;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 0; // reset
+            }
+
+            update() {
+                this.angle += this.swirlFactor;
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+
+                if (mouse.x && mouse.y) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    let forceDirectionX = dx / distance;
+                    let forceDirectionY = dy / distance;
+                    let maxDistance = mouse.radius;
+                    let force = (maxDistance - distance) / maxDistance;
+                    let directionX = forceDirectionX * force * this.density;
+                    let directionY = forceDirectionY * force * this.density;
+
+                    if (distance < mouse.radius) {
+                        this.x -= directionX;
+                        this.y -= directionY;
+                    }
+                }
+
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+        }
+
+        function initStarrySky() {
+            particles = [];
+            const colors = [
+                'rgba(236, 195, 72, 0.7)',  // Star Gold
+                'rgba(245, 208, 97, 0.6)',  // Amber Glow
+                'rgba(18, 45, 84, 0.4)',    // Deep Sky Blue
+                'rgba(250, 246, 238, 0.7)'   // Canvas Linen Cream
+            ];
+
+            const count = window.innerWidth < 768 ? 50 : 120;
+            for (let i = 0; i < count; i++) {
+                let size = (Math.random() * 2.2) + 0.6;
+                let x = Math.random() * canvas.width;
+                let y = Math.random() * canvas.height;
+                let color = colors[Math.floor(Math.random() * colors.length)];
+                let speed = (Math.random() * 0.25) + 0.08;
+                let angle = Math.random() * Math.PI * 2;
+                let swirlFactor = (Math.random() * 0.008) - 0.004;
+
+                particles.push(new StarryNightParticle(x, y, size, color, speed, angle, swirlFactor));
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateStars);
+        }
+
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            animateStars();
+            renderGallery('all');
+        });
+        window.addEventListener('resize', resizeCanvas);
+
+        window.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+
+        window.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        // ART GALLERY DYNAMIC RENDERER & FILTERS
+        function renderGallery(filter = 'all') {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+
+            const filteredArt = filter === 'all' 
+                ? artworksData 
+                : artworksData.filter(art => art.category === filter);
+
+            filteredArt.forEach(art => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel rounded-3xl p-5 flex flex-col justify-between group hover:shadow-frame transition-all duration-500 relative overflow-hidden border border-vangogh-gold/15';
+                
+                card.innerHTML = `
+                    <div class="absolute -top-10 -right-10 w-48 h-48 bg-gradient-to-bl from-vangogh-gold/5 to-transparent rounded-full blur-2xl -z-10"></div>
+                    <div>
+                        <div class="aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#030a14] relative mb-5 border-4 border-[#1e1e1e] outline outline-1 outline-vangogh-gold/30 shadow-md">
+                            <img src="${art.image}" alt="${art.title}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400x300/07162C/FAF6EE?text=${encodeURIComponent(art.title)}'">
+                            <span class="absolute top-3 right-3 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[8px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5 backdrop-blur-md">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Obra Única
+                            </span>
+                            <span class="absolute bottom-3 left-3 bg-vangogh-cobalt/90 backdrop-blur-md border border-vangogh-gold/20 text-vangogh-gold text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Sala de Exhibición</span>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold text-vangogh-cream group-hover:text-vangogh-gold transition-colors leading-tight">${art.title}</h3>
+                        <p class="text-xs text-gray-400 mt-1">Por: <span class="text-gray-300 font-medium">${art.artist}</span></p>
+                        <p class="text-[11px] text-vangogh-gold italic mt-1 font-light">${art.technique}</p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between border-t border-vangogh-gold/10 pt-4">
+                        <div class="flex flex-col">
+                            <span class="text-[9px] text-gray-400 uppercase tracking-wider">Tasación Oficial</span>
+                            <span class="font-serif text-xl font-bold text-vangogh-gold">$${art.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="openGalleryLightbox(${art.id})" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-vangogh-gold to-yellow-500 text-vangogh-cobalt text-xs font-black tracking-widest uppercase hover:scale-105 hover:shadow-glow transition-all duration-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-eye text-xs"></i> <span>Ver & Adquirir</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterGallery(category) {
+            const buttons = document.querySelectorAll('.gallery-filter-btn');
+            buttons.forEach(btn => {
+                btn.className = "gallery-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-vangogh-sky/40 text-vangogh-cream border border-vangogh-gold/15 hover:border-vangogh-gold hover:text-vangogh-gold transition-all";
+            });
+            event.target.className = "gallery-filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-vangogh-gold text-vangogh-cobalt border border-vangogh-gold/30 transition-all";
+            renderGallery(category);
+        }
+
+        // LIGHTBOX CONTROLLER
+        function openGalleryLightbox(artId) {
+            const art = artworksData.find(a => a.id === artId);
+            if (!art) return;
+
+            document.getElementById('lightbox-art-image').src = art.image;
+            document.getElementById('lightbox-art-image').onerror = function() {
+                this.src = `https://placehold.co/800x600/07162C/FAF6EE?text=${encodeURIComponent(art.title)}`;
+            };
+            document.getElementById('lightbox-art-title').innerText = art.title;
+            document.getElementById('lightbox-art-artist').innerText = art.artist;
+            document.getElementById('lightbox-art-technique').innerText = art.technique;
+            document.getElementById('lightbox-art-year').innerText = art.year;
+            document.getElementById('lightbox-art-dimensions').innerText = art.dimensions;
+            document.getElementById('lightbox-art-desc').innerText = art.description;
+            document.getElementById('lightbox-art-price').innerText = `$${art.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            document.getElementById('lightbox-purchase-btn').setAttribute('onclick', `initiateArtPurchase(${art.id})`);
+
+            const lightbox = document.getElementById('gallery-lightbox');
+            lightbox.classList.remove('pointer-events-none');
+            lightbox.classList.add('opacity-100');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGalleryLightbox() {
+            const lightbox = document.getElementById('gallery-lightbox');
+            lightbox.classList.add('pointer-events-none');
+            lightbox.classList.remove('opacity-100');
+            document.body.style.overflow = '';
+        }
+
+        // ARTWORK PURCHASE INTEREST MODAL
+        function initiateArtPurchase(artId) {
+            closeGalleryLightbox();
+            const art = artworksData.find(a => a.id === artId);
+            if (!art) return;
+
+            document.getElementById('purchase-modal-title').innerText = art.title;
+            document.getElementById('purchase-art-id').value = art.id;
+
+            const modal = document.getElementById('art-purchase-modal');
+            modal.classList.remove('pointer-events-none');
+            modal.classList.add('opacity-100');
+        }
+
+        function closeArtPurchaseModal() {
+            const modal = document.getElementById('art-purchase-modal');
+            modal.classList.add('pointer-events-none');
+            modal.classList.remove('opacity-100');
+        }
+
+        function submitArtPurchase(event) {
+            event.preventDefault();
+            const artTitle = document.getElementById('purchase-modal-title').innerText;
+            const collector = document.getElementById('purchase-name').value;
+            const phone = document.getElementById('purchase-phone').value;
+
+            closeArtPurchaseModal();
+
+            const text = `¡Hola La Paleta de Van Gogh! Estoy sumamente interesado/a en adquirir la siguiente obra de arte de la galería:\n\n` +
+                         `🎨 Obra: *${artTitle}*\n` +
+                         `👤 Coleccionista: *${collector}*\n` +
+                         `📞 Teléfono: ${phone}\n\n` +
+                         `Por favor, indíquenme los pasos a seguir para coordinar el certificado de autenticidad, la firma de transferencia y el embalaje museográfico seguro.`;
+
+            window.open(`https://wa.me/50255033860?text=${encodeURIComponent(text)}`, '_blank');
+
+            document.getElementById('purchase-name').value = '';
+            document.getElementById('purchase-phone').value = '';
+        }
+
+        // DEDICATED STORE ENGINE: RENDER, SEARCH & FILTERS
+        function renderStoreProducts() {
+            const grid = document.getElementById('store-products-grid');
+            const noResults = document.getElementById('store-no-results');
+            const searchVal = document.getElementById('store-search').value.toLowerCase();
+            
+            grid.innerHTML = '';
+
+            const filtered = storeProductsData.filter(product => {
+                const matchesCategory = (storeCategory === 'all' || product.category === storeCategory);
+                const matchesSearch = (product.name.toLowerCase().includes(searchVal) || product.desc.toLowerCase().includes(searchVal));
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+                grid.classList.add('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                grid.classList.remove('hidden');
+
+                filtered.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = "glass-panel rounded-3xl p-4 flex flex-col justify-between group hover:shadow-glow transition-all duration-300";
+                    productCard.innerHTML = `
+                        <div>
+                            <div class="aspect-square w-full rounded-2xl overflow-hidden bg-[#030a14] relative mb-4">
+                                <div class="absolute inset-0 bg-vangogh-sky/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400x400/07162C/FAF6EE?text=${encodeURIComponent(product.name)}'">
+                                <span class="absolute top-3 left-3 bg-vangogh-gold text-vangogh-cobalt text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">${product.category}</span>
+                            </div>
+                            <h3 class="font-serif text-2xl font-bold text-vangogh-cream group-hover:text-vangogh-gold transition-colors leading-tight">${product.name}</h3>
+                            <p class="text-xs text-gray-400 mt-1 line-clamp-2">${product.desc}</p>
+                        </div>
+                        <div class="mt-6 flex items-center justify-between border-t border-vangogh-gold/10 pt-4">
+                            <span class="font-serif text-xl font-bold text-vangogh-gold">$${product.price.toFixed(2)}</span>
+                            <div class="flex gap-2">
+                                <button onclick="openProductQuickView(${product.id})" class="p-2.5 rounded-full bg-vangogh-sky/40 text-vangogh-cream hover:bg-vangogh-sky/60 hover:text-vangogh-gold text-xs transition-colors" title="Detalles del producto">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <button onclick="addToCart('${product.name}', ${product.price}, '${product.image}')" class="px-4 py-2 rounded-full bg-vangogh-gold hover:bg-vangogh-amber text-vangogh-cobalt text-xs font-bold tracking-wider transition-all duration-300 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-cart-plus"></i> Añadir
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(productCard);
+                });
+            }
+        }
+
+        function filterStoreProducts() {
+            renderStoreProducts();
+        }
+
+        function selectStoreCategory(category) {
+            storeCategory = category;
+            
+            // Adjust buttons active states
+            const buttons = document.querySelectorAll('.store-category-btn');
+            buttons.forEach(btn => {
+                btn.className = "store-category-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-vangogh-sky/50 text-vangogh-cream border border-vangogh-gold/15 hover:border-vangogh-gold hover:text-vangogh-gold transition-all";
+            });
+
+            // Highlight chosen button
+            event.target.className = "store-category-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-vangogh-gold text-vangogh-cobalt transition-all";
+            
+            renderStoreProducts();
+        }
+
+        // STORE PRODUCT QUICK VIEW CONTROLLER
+        function openProductQuickView(id) {
+            const product = storeProductsData.find(p => p.id === id);
+            if (!product) return;
+
+            document.getElementById('quickview-img').src = product.image;
+            document.getElementById('quickview-img').onerror = function() {
+                this.src = `https://placehold.co/400x400/07162C/FAF6EE?text=${encodeURIComponent(product.name)}`;
+            };
+            document.getElementById('quickview-category-badge').innerText = product.category;
+            document.getElementById('quickview-title').innerText = product.name;
+            document.getElementById('quickview-price').innerText = `$${product.price.toFixed(2)}`;
+            document.getElementById('quickview-desc').innerText = product.desc;
+            document.getElementById('quickview-specs').innerText = product.specs;
+
+            // Bind add to cart dynamic button inside the quickview modal
+            document.getElementById('quickview-add-btn').onclick = function() {
+                addToCart(product.name, product.price, product.image);
+                closeProductQuickView();
+            };
+
+            const modal = document.getElementById('product-quickview-modal');
+            modal.classList.remove('pointer-events-none');
+            modal.classList.add('opacity-100');
+        }
+
+        function closeProductQuickView() {
+            const modal = document.getElementById('product-quickview-modal');
+            modal.classList.add('pointer-events-none');
+            modal.classList.remove('opacity-100');
+        }
+
+        // SHOPPING CART CONTROLLER
+        function toggleCart() {
+            const drawer = document.getElementById('cart-drawer');
+            drawer.classList.toggle('hidden');
+            setTimeout(() => {
+                drawer.classList.toggle('translate-x-full');
+            }, 50);
+        }
+
+        function addToCart(name, price, image) {
+            const existingItemIndex = cart.findIndex(item => item.name === name);
+            if (existingItemIndex > -1) {
+                cart[existingItemIndex].quantity += 1;
+            } else {
+                cart.push({ name, price, image, quantity: 1 });
+            }
+            updateCartUI();
+            showToast('Añadido al Taller', `"${name}" agregado exitosamente.`);
+        }
+
+        function removeFromCart(name) {
+            cart = cart.filter(item => item.name !== name);
+            updateCartUI();
+        }
+
+        function changeQuantity(name, change) {
+            const item = cart.find(i => i.name === name);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(name);
+                } else {
+                    updateCartUI();
+                }
+            }
+        }
+
+        function processPurchase() {
+            if (cart.length === 0) {
+                alertMessage("Tu carrito está vacío. Agrega algunos materiales antes de proceder.");
+                return;
+            }
+
+            let text = `¡Hola La Paleta de Van Gogh! Me gustaría confirmar la compra de los siguientes suministros de arte de su tienda oficial:\n\n`;
+            
+            cart.forEach(item => {
+                text += `📦 *${item.name}*\n   Cantidad: ${item.quantity} | Subtotal: $${(item.price * item.quantity).toFixed(2)}\n\n`;
+            });
+
+            text += `*Total Estimado: ${document.getElementById('cart-total').innerText}*\n\n` +
+                    `Por favor, indíquenme cómo proceder con el pago y coordinar el embalaje hermético de mis materiales. ¡Muchas gracias!`;
+
+            window.open(`https://wa.me/50255033860?text=${encodeURIComponent(text)}`, '_blank');
+
+            cart = [];
+            updateCartUI();
+            toggleCart();
+        }
+
+        // ACADEMY BOOKING SYSTEM
+        function openBooking(className, priceStr) {
+            const modal = document.getElementById('booking-modal');
+            const title = document.getElementById('modal-class-title');
+            const price = document.getElementById('modal-class-price');
+
+            title.innerText = className;
+            price.innerText = priceStr;
+
+            modal.classList.remove('pointer-events-none');
+            modal.classList.add('opacity-100');
+        }
+
+        function closeBookingModal() {
+            const modal = document.getElementById('booking-modal');
+            modal.classList.add('pointer-events-none');
+            modal.classList.remove('opacity-100');
+        }
+
+        function submitBooking(event) {
+            event.preventDefault();
+            const className = document.getElementById('modal-class-title').innerText;
+            const student = document.getElementById('booking-name').value;
+            const phone = document.getElementById('booking-phone').value;
+            const modality = document.getElementById('booking-modality').value;
+
+            closeBookingModal();
+
+            const text = `¡Hola La Paleta de Van Gogh! Me gustaría reservar mi plaza e inscribirme en la academia:\n\n` +
+                         `🎓 Clase/Curso: *${className}*\n` +
+                         `👤 Alumno o Tutor: *${student}*\n` +
+                         `💻 Modalidad: ${modality === 'presencial' ? 'Presencial (Sede Atelier Central)' : 'Virtual Interactive (Streaming HD)'}\n` +
+                         `📞 Teléfono: ${phone}\n\n` +
+                         `Quedo a la espera de que me compartan la propuesta completa de horarios y profesores especializados.`;
+
+            window.open(`https://wa.me/50255033860?text=${encodeURIComponent(text)}`, '_blank');
+
+            document.getElementById('booking-name').value = '';
+            document.getElementById('booking-phone').value = '';
+        }
+
+        // ARTIST PORTFOLIO SUBMISSION MODAL
+        function openArtistApplicationModal() {
+            const modal = document.getElementById('artist-modal');
+            modal.classList.remove('pointer-events-none');
+            modal.classList.add('opacity-100');
+        }
+
+        function closeArtistApplicationModal() {
+            const modal = document.getElementById('artist-modal');
+            modal.classList.add('pointer-events-none');
+            modal.classList.remove('opacity-100');
+        }
+
+        function submitArtistApplication(event) {
+            event.preventDefault();
+            const artist = document.getElementById('artist-name').value;
+            const phone = document.getElementById('artist-phone').value;
+            const specialty = document.getElementById('artist-specialty').value;
+            const portfolio = document.getElementById('artist-portfolio').value;
+            const styleDesc = document.getElementById('artist-style-desc').value;
+
+            closeArtistApplicationModal();
+
+            const text = `¡Hola La Paleta de Van Gogh! Me gustaría postular mi portafolio artístico al programa de apoyo cultural:\n\n` +
+                         `🎨 Nombre Artístico: *${artist}*\n` +
+                         `✨ Especialidad: ${specialty}\n` +
+                         `📞 Teléfono: ${phone}\n` +
+                         `🔗 Portafolio o Redes: ${portfolio}\n` +
+                         `📝 Estilo: ${styleDesc}\n\n` +
+                         `Espero su respuesta para poder agendar una curaduría en su prestigiosa sala de exhibición.`;
+
+            window.open(`https://wa.me/50255033860?text=${encodeURIComponent(text)}`, '_blank');
+
+            document.getElementById('artist-name').value = '';
+            document.getElementById('artist-phone').value = '';
+            document.getElementById('artist-specialty').value = '';
+            document.getElementById('artist-portfolio').value = '';
+            document.getElementById('artist-style-desc').value = '';
+        }
+
+        function subscribeNewsletter(event) {
+            event.preventDefault();
+            const phone = event.target.querySelector('input[type="tel"]').value;
+            const text = `¡Hola La Paleta de Van Gogh! Me gustaría suscribirme a sus boletines de WhatsApp para recibir información sobre arte, lanzamientos de materiales y talleres.\n\n📞 Mi teléfono: ${phone}`;
+            window.open(`https://wa.me/50255033860?text=${encodeURIComponent(text)}`, '_blank');
+            event.target.reset();
+        }
+
+        // REUSABLE TOAST POPUP NOTIFICATION
+        function showToast(title, message) {
+            const toast = document.getElementById('toast-notification');
+            const tTitle = document.getElementById('toast-title');
+            const tMsg = document.getElementById('toast-message');
+
+            tTitle.innerText = title;
+            tMsg.innerText = message;
+
+            toast.classList.remove('opacity-0', 'translate-y-24');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-24');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 3000);
+        }
+
+        function submitContactForm(event) {
+            event.preventDefault();
+            const name = document.getElementById('contact-name').value;
+            const phone = document.getElementById('contact-phone').value;
+            const serviceSelect = document.getElementById('contact-service');
+            const serviceText = serviceSelect.options[serviceSelect.selectedIndex].text;
+            const message = document.getElementById('contact-message').value;
+
+            const text = `¡Hola La Paleta de Van Gogh! Acabo de completar el formulario de contacto para recibir atención personalizada:\n\n` +
+                         `👤 Nombre: *${name}*\n` +
+                         `📞 Teléfono: ${phone}\n` +
+                         `🛎️ Servicio de Interés: *${serviceText}*\n` +
+                         `💬 Mensaje o Consulta: ${message}\n\n` +
+                         `Agradezco su atención y quedo a la espera de su comunicación.`;
+
+            window.open(`https://wa.me/50255033860?text=${encodeURIComponent(text)}`, '_blank');
+
+            event.target.reset();
+        }
+
+        // MOBILE MENU NAVIGATION TOGGLE
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            menu.classList.toggle('hidden');
+            if (menu.classList.contains('hidden')) {
+                icon.className = 'fa-solid fa-bars text-2xl';
+            } else {
+                icon.className = 'fa-solid fa-xmark text-2xl';
+            }
+        }
+
+        // CUSTOM DIALOG POPUP REPLACING NATIVE ALERT()
+        function alertMessage(msg) {
+            const alertBox = document.getElementById('custom-alert-box');
+            const alertMsg = document.getElementById('custom-alert-message');
+            alertMsg.innerText = msg;
+            alertBox.classList.remove('pointer-events-none');
+            alertBox.classList.add('opacity-100');
+        }
+
+        function closeAlert() {
+            const alertBox = document.getElementById('custom-alert-box');
+            alertBox.classList.add('pointer-events-none');
+            alertBox.classList.remove('opacity-100');
+        }
+    </script>
+</body>
+</html>
